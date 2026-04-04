@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CrmUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  fullName     String
+  passwordHash String
+  role         String   @default("admin")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model BotGlobalSetting {
+  id              String   @id @default(cuid())
+  botEnabled      Boolean  @default(true)
+  maintenanceMode Boolean  @default(false)
+  updatedBy       String?
+  updatedAt       DateTime @updatedAt
+}
+
+model ChatControl {
+  phone         String   @id
+  botEnabled    Boolean  @default(true)
+  humanTakeover Boolean  @default(false)
+  assignedTo    String?
+  status        String   @default("active")
+  notes         String?
+  updatedAt     DateTime @updatedAt
+}
+
+model BotBlacklist {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  reason    String?
+  active    Boolean  @default(true)
+  createdBy String?
+  createdAt DateTime @default(now())
+}
+
+model ChatNote {
+  id        String   @id @default(cuid())
+  phone     String
+  note      String
+  createdBy String?
+  createdAt DateTime @default(now())
+}
+
+model Incident {
+  id          String   @id @default(cuid())
+  phone       String
+  status      String   @default("open")
+  severity    String   @default("low")
+  branch      String?
+  summary     String?
+  assignedTo  String?
+  resolvedAt  DateTime?
+  lastAlertAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model IncidentState {
+  id             String   @id @default(cuid())
+  phone          String
+  status         String   @default("open")
+  severity       String   @default("low")
+  branch         String?
+  summary        String?
+  sourceAlertId  Int?
+  lastAlertAt    DateTime?
+  lastMessageAt  DateTime?
+  assignedTo     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([phone, status])
+}
+
+model IncidentEvent {
+  id          String   @id @default(cuid())
+  incidentId  String
+  eventType   String
+  payload     Json?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+
+  @@index([incidentId, createdAt])
+}
+
+model OrderDraft {
+  id               String   @id @default(cuid())
+  phone            String
+  customerName     String?
+  branch           String?
+  serviceType      String?
+  itemsSummary     String?
+  deliveryAddress  String?
+  paymentMethod    String?
+  observations     String?
+  status           String   @default("pending_validation")
+  sourceMessageId  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([phone, updatedAt])
+}
+
+model ReservationDraft {
+  id              String   @id @default(cuid())
+  phone           String
+  customerName    String?
+  branch          String?
+  peopleCount     Int?
+  reservationDate String?
+  reservationTime String?
+  observations    String?
+  status          String   @default("pending_validation")
+  sourceMessageId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([phone, updatedAt])
+}
+
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String?
+  action     String
+  actor      String?
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, createdAt])
+}

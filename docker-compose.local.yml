@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yokohama-crm-postgres
+    environment:
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: crm_password
+      POSTGRES_DB: crm_yokohama
+    ports:
+      - "5432:5432"
+    volumes:
+      - crm_postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: yokohama-crm-api
+    environment:
+      DATABASE_URL: postgresql://crm_user:crm_password@postgres:5432/crm_yokohama
+      PORT: 3011
+      JWT_SECRET: local-dev-secret
+      CORS_ORIGIN: http://localhost:3000
+      CRM_ADMIN_EMAIL: admin@aeternum.red
+      CRM_ADMIN_PASSWORD: ChangeThis123!
+      CRM_N8N_API_KEY: local-n8n-key
+    depends_on:
+      - postgres
+    ports:
+      - "3011:3011"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: yokohama-crm-web
+    environment:
+      API_BASE_URL: http://api:3011/api
+      NEXT_PUBLIC_API_URL: http://localhost:3011/api
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  crm_postgres_data:
