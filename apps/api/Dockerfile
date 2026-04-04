@@ -10,17 +10,11 @@ RUN pnpm install --filter api... --no-frozen-lockfile
 
 FROM deps AS build
 COPY . .
-RUN pnpm --filter api prisma generate
+RUN pnpm --filter api exec prisma generate --schema=prisma/schema.prisma
 RUN pnpm --filter api build
 
-FROM node:20-alpine AS runner
+FROM build AS runner
 WORKDIR /app
-RUN corepack enable
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/apps/api/dist ./apps/api/dist
-COPY --from=build /app/apps/api/prisma ./apps/api/prisma
-COPY --from=build /app/apps/api/package.json ./apps/api/package.json
-COPY --from=build /app/packages/shared ./packages/shared
 ENV NODE_ENV=production
 WORKDIR /app/apps/api
 EXPOSE 3011

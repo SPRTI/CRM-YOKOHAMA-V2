@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Roles } from '../auth/roles.decorator';
 import { BlacklistService } from './blacklist.service';
 import { CreateBlacklistDto } from './dto/create-blacklist.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('blacklist')
-export @Roles('admin', 'supervisor')
+@Roles('admin', 'supervisor')
 export class BlacklistController {
   constructor(private readonly blacklistService: BlacklistService) {}
 
@@ -14,8 +14,8 @@ export class BlacklistController {
   }
 
   @Post()
-  add(@Body() dto: CreateBlacklistDto) {
-    return this.blacklistService.add(dto);
+  create(@Body() dto: CreateBlacklistDto) {
+    return this.blacklistService.create(dto);
   }
 
   @Delete(':phone')

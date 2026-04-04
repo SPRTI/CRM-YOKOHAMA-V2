@@ -7,4 +7,8 @@ export class CreateBlacklistDto {
   @IsOptional()
   @IsString()
   reason?: string;
+
+  @IsOptional()
+  @IsString()
+  createdBy?: string;
 }
