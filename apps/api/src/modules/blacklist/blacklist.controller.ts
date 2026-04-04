@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { Roles } from '../auth/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { BlacklistService } from './blacklist.service';
 import { CreateBlacklistDto } from './dto/create-blacklist.dto';
 
