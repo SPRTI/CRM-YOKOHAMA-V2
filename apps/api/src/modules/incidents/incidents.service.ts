@@ -35,7 +35,7 @@ export class IncidentsService {
             severity: alert.severity || open.severity,
             branch: alert.branch || open.branch,
             summary: alert.summary || open.summary,
-            sourceAlertId,
+            sourceAlertId: alert.id != null ? Number(alert.id) : null,
             lastAlertAt: alert.created_at,
             lastMessageAt: alert.created_at,
           },
@@ -48,7 +48,7 @@ export class IncidentsService {
             severity: alert.severity || 'low',
             branch: alert.branch || null,
             summary: alert.summary || 'Sin resumen',
-            sourceAlertId,
+            sourceAlertId: alert.id != null ? Number(alert.id) : null,
             lastAlertAt: alert.created_at,
             lastMessageAt: alert.created_at,
           },
@@ -58,7 +58,7 @@ export class IncidentsService {
           data: {
             incidentId: created.id,
             eventType: 'created_from_alert',
-            payload: { sourceAlertId },
+            payload: { sourceAlertId: alert.id != null ? Number(alert.id) : null },
           },
         });
       }

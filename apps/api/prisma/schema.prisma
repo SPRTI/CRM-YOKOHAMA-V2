@@ -20,20 +20,25 @@ model CrmUser {
 
 model BotGlobalSetting {
   id              String   @id @default(cuid())
-  botEnabled      Boolean  @default(true)
-  maintenanceMode Boolean  @default(false)
-  updatedBy       String?
-  updatedAt       DateTime @updatedAt
+  botEnabled      Boolean  @default(true) @map("bot_enabled")
+  maintenanceMode Boolean  @default(false) @map("maintenance_mode")
+  maintenanceMessage String? @map("maintenance_message")
+  updatedBy       String?  @map("updated_by")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("bot_global_settings")
 }
 
 model ChatControl {
   phone         String   @id
-  botEnabled    Boolean  @default(true)
-  humanTakeover Boolean  @default(false)
-  assignedTo    String?
+  botEnabled    Boolean  @default(true) @map("bot_enabled")
+  humanTakeover Boolean  @default(false) @map("human_takeover")
+  assignedTo    String?  @map("assigned_to")
   status        String   @default("active")
   notes         String?
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("chat_controls")
 }
 
 model BotBlacklist {
@@ -41,16 +46,20 @@ model BotBlacklist {
   phone     String   @unique
   reason    String?
   active    Boolean  @default(true)
-  createdBy String?
-  createdAt DateTime @default(now())
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("bot_blacklist")
 }
 
 model ChatNote {
   id        String   @id @default(cuid())
   phone     String
   note      String
-  createdBy String?
-  createdAt DateTime @default(now())
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("chat_notes")
 }
 
 model Incident {
@@ -69,78 +78,82 @@ model Incident {
 
 
 model IncidentState {
-  id             String   @id @default(cuid())
-  phone          String
-  status         String   @default("open")
-  severity       String   @default("low")
-  branch         String?
-  summary        String?
-  sourceAlertId  Int?
-  lastAlertAt    DateTime?
-  lastMessageAt  DateTime?
-  assignedTo     String?
-  resolvedAt     DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(cuid())
+  phone         String
+  status        String   @default("open")
+  severity      String   @default("low")
+  branch        String?
+  summary       String?
+  sourceAlertId Int?     @map("source_alert_id")
+  lastAlertAt   DateTime? @map("last_alert_at")
+  lastMessageAt DateTime? @map("last_message_at")
+  assignedTo    String?  @map("assigned_to")
+  resolvedAt    DateTime? @map("resolved_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@index([phone, status])
+  @@map("incident_state")
 }
 
 model IncidentEvent {
-  id          String   @id @default(cuid())
-  incidentId  String
-  eventType   String
-  payload     Json?
-  createdBy   String?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  incidentId String   @map("incident_id")
+  eventType  String   @map("event_type")
+  payload    Json?
+  createdBy  String?  @map("created_by")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   @@index([incidentId, createdAt])
+  @@map("incident_events")
 }
 
 model OrderDraft {
-  id               String   @id @default(cuid())
-  phone            String
-  customerName     String?
-  branch           String?
-  serviceType      String?
-  itemsSummary     String?
-  deliveryAddress  String?
-  paymentMethod    String?
-  observations     String?
-  status           String   @default("pending_validation")
-  sourceMessageId  String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default(cuid())
+  phone           String
+  customerName    String?  @map("customer_name")
+  branch          String?
+  serviceType     String?  @map("service_type")
+  itemsSummary    String?  @map("items_summary")
+  deliveryAddress String?  @map("delivery_address")
+  paymentMethod   String?  @map("payment_method")
+  observations    String?
+  status          String   @default("pending_validation")
+  sourceMessageId String?  @map("source_message_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@index([phone, updatedAt])
+  @@map("order_drafts")
 }
 
 model ReservationDraft {
   id              String   @id @default(cuid())
   phone           String
-  customerName    String?
+  customerName    String?  @map("customer_name")
   branch          String?
-  peopleCount     Int?
-  reservationDate String?
-  reservationTime String?
+  peopleCount     Int?     @map("people_count")
+  reservationDate String?  @map("reservation_date")
+  reservationTime String?  @map("reservation_time")
   observations    String?
   status          String   @default("pending_validation")
-  sourceMessageId String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  sourceMessageId String?  @map("source_message_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@index([phone, updatedAt])
+  @@map("reservation_drafts")
 }
-
 
 model AuditLog {
   id         String   @id @default(cuid())
-  entityType String
-  entityId   String?
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
   action     String
   actor      String?
   payload    Json?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime @default(now()) @map("created_at")
 
   @@index([entityType, createdAt])
+  @@map("audit_logs")
 }
